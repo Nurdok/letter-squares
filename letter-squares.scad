@@ -34,7 +34,7 @@ module triangle(edge) {
     } 
 }
 
-module letter_square() {
+module letter_square(letter) {
   difference() {
     roundedcube(ls_side, ls_side, ls_depth, ls_corner_radius);
       /*
@@ -57,12 +57,46 @@ module letter_square() {
   }
   translate([ls_side/2, ls_side/2, ls_depth]) {
       linear_extrude(height=2) {
-    text("A", valign="center", halign="center");
+    color([0,1,0]) text(letter, valign="center", halign="center", size=20);
       }
   }
 }
 
-letter_square();
+letters = [
+[0, "א"], 
+[1, "ב"], 
+[2, "ג"],
+[3, "ד"],
+[4, "ה"],
+[5, "ו"],
+[6, "ז"],
+[7, "ח"],
+[8, "ט"],
+[9, "י"],
+[10, "כ"],
+[11, "ל"],
+[12, "מ"],
+[13, "ם"],
+[14, "נ"],
+[15, "ן"],
+[16, "ס"],
+[17, "ע"],
+[18, "פ"],
+[19, "ף"],
+[20, "צ"],
+[21, "ץ"],
+[22, "ק"],
+[23, "ר"],
+[24, "ש"],
+[25, "ת"],
+];
+
+for (letter = letters) {
+    translate([letter[0] * (ls_side + 2), 0, 0]) {
+        letter_square(letter[1]);
+    }
+}
+//letter_square("B");
 //text("א");
 
 
