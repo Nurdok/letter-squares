@@ -16,14 +16,6 @@ module roundedcube(xdim ,ydim ,zdim, rdim){
   }
 }
 
-module slider_hole() {
-  cube([slider_width, ls_side / 2, ls_depth / 2]);
-}
-
-module plug(r) {
-  cylinder(h=ls_depth/2, r=r, center=true);
-}
-
 module triangle(edge) {
     h = ls_depth / 2;
     module vertex() { cylinder(h=h, r=1); }
@@ -37,13 +29,6 @@ module triangle(edge) {
 module letter_square(letter) {
   difference() {
     roundedcube(ls_side, ls_side, ls_depth, ls_corner_radius);
-      /*
-    translate([ls_side / 4 - slider_width / 2, 0, 0]) {
-      slider_hole();
-    }
-    translate([ls_side * 3 / 4 - slider_width / 2, 0, 0]) {
-      slider_hole();
-    }*/
     difference(){
     translate([ls_side/2, ls_side/2, 0]) {
         difference(){
@@ -57,7 +42,8 @@ module letter_square(letter) {
   }
   translate([ls_side/2, ls_side/2, ls_depth]) {
       linear_extrude(height=2) {
-    color([0,1,0]) text(letter, valign="center", halign="center", size=20);
+    color([0,1,0]) text(letter, valign="center", halign="center", size=20
+         );
       }
   }
 }
@@ -96,8 +82,6 @@ for (letter = letters) {
         letter_square(letter[1]);
     }
 }
-//letter_square("B");
-//text("א");
 
 
 
