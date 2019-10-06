@@ -16,7 +16,7 @@ ls_corner_radius = 5;
 slider_width = 1;
 slider_width_slack = 1;
 
-// A rounded cube whose edges are culinders with rdim radius.
+// A rounded cube whose edges are cylinders with rdim radius.
 module roundedcube(xdim ,ydim ,zdim, rdim){
   hull(){
     translate([rdim,rdim,0]) cylinder(h=zdim,r=rdim);
@@ -45,13 +45,12 @@ module tile(letter) {
   difference() {
     roundedcube(ls_side, ls_side, ls_depth, ls_corner_radius);
     difference() {
-    translate([ls_side/2, ls_side/2, 0]) {
-        difference() {
-        equilateral_triangle(edge=12); 
-        equilateral_triangle(edge=8);
+      translate([ls_side/2, ls_side/2, 0]) {
+          difference() {
+            equilateral_triangle(edge=20); 
+            equilateral_triangle(edge=10);
+        }
       }
-    }
-    
     }
   }
   translate([ls_side/2, ls_side/2, ls_depth]) {
@@ -62,35 +61,37 @@ module tile(letter) {
   }
 }
 
+board_slack = 1;
+board_margin = 2;
+
 // A letter board with space for `size` letters.
 module board(size) {
-  side_margin = 2;
-  side = ls_side + side_margin;
+  side = ls_side + board_margin + board_slack;
   bottom_depth = ls_depth / 2;
   module end() {
-    roundedcube(side + side_margin, side + side_margin, ls_depth, ls_corner_radius);
+    roundedcube(side, side + board_margin, ls_depth, ls_corner_radius);
   }
   module base() {
     hull() {
       end();
-      translate([side * (size - 1), 0, 0]) { end(); }
+      translate([side * (size - 1) + board_margin, 0, 0]) { end(); }
     }
   }
   difference() {
     base();
     union() {
-    for (i = [0:size-1]) {
-      translate([side * i + side_margin, side_margin, bottom_depth]) {
-          roundedcube(ls_side, ls_side, ls_depth, ls_corner_radius);
+      for (i = [0:size-1]) {
+        translate([side * i + board_margin, board_margin, bottom_depth]) {
+            roundedcube(ls_side + board_slack, ls_side + board_slack, ls_depth, ls_corner_radius);
+        }
       }
-    }
     }
   }
   for (i = [0:size-1]) {
-    translate([side * i + side / 2, side / 2, bottom_depth]) {
+    translate([side * i + side / 2 + board_margin/2, side / 2 + board_margin /2 , bottom_depth]) {
         difference() {
-          equilateral_triangle(edge=11);
-          equilateral_triangle(edge=9);
+          equilateral_triangle(edge=18);
+          equilateral_triangle(edge=12);
         }
     }
   }
@@ -99,20 +100,25 @@ module board(size) {
 // A matrix of tiles for all letters.
 module all_tiles(letters) {
   for (i = [0:len(letters) - 1]) {
-      translate([i % 6 * (ls_side + 2), floor(i / 6) * (ls_side + 2), 0]) {
+      translate([i % 6 * (ls_side + board_margin + board_slack), floor(i / 6) * (ls_side + 2), 0]) {
           tile(letters[i]);
       }
   }
 }
 
-all_tiles(letters);
+letters = ["י", "נ", "פ", "ד"];
+board_sizes = [4];
 
-board_sizes = [4, 5, 6];
-for (i = [0:len(board_sizes)-1]) {
-  translate ([0, -ls_side * 2 - (ls_side + 10) * i , 0]) { 
-    board(board_sizes[i]); 
+
+//intersection() {
+  union() {
+    for (i = [0:len(board_sizes)-1]) {
+      translate ([-board_margin - board_slack/2, -board_margin - board_slack/2, -ls_depth/2]) { 
+        color("yellow", 1) board(board_sizes[i]); 
+      }
+    }
   }
-}
-
-
-
+  translate([0, ls_side*2, 0]) {
+  color("green", .5) all_tiles(letters);
+  }
+//}
